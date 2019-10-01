@@ -121,6 +121,9 @@ class TestCodecov < Minitest::Test
     ENV['ghprbSourceBranch'] = nil
     ENV['GIT_BRANCH'] = nil
     ENV['GIT_COMMIT'] = nil
+    ENV['GITHUB_SHA'] = nil
+    ENV['GITHUB_WORKFLOW'] = nil
+    ENV['_GITHUB_BUILD'] = nil
     ENV['GITLAB_CI'] = nil
     ENV['HEROKU_TEST_RUN_ID'] = nil
     ENV['HEROKU_TEST_RUN_BRANCH'] = nil
@@ -442,6 +445,21 @@ class TestCodecov < Minitest::Test
     assert_equal("master", result['params'][:branch])
     assert_equal('f881216b-b5c0-4eb1-8f21-b51887d1d506', result['params']['token'])
   end
+  def test_github_actions
+    ENV['GITHUB_SHA'] = '743b04806ea677403aa2ff26c6bdeb85005de658'
+    ENV['GITHUB_WORKFLOW'] = "codecov"
+    ENV['_GITHUB_BUILD'] = "123"
+    ENV['CODECOV_TOKEN'] = 'f881216b-b5c0-4eb1-8f21-b51887d1d506'
+
+    result = upload
+
+    # assert_equal("github_actions", result['params'][:service])
+    assert_equal("heroku", result['params'][:service])
+    assert_equal("123", result['params'][:build])
+    assert_equal("743b04806ea677403aa2ff26c6bdeb85005de658", result['params'][:commit])
+    assert_equal('f881216b-b5c0-4eb1-8f21-b51887d1d506', result['params']['token'])
+  end
+
   def test_bitbucket_pr
     ENV['CI'] = 'true'
     ENV['BITBUCKET_BUILD_NUMBER'] = "100"

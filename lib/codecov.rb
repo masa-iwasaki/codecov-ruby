@@ -230,6 +230,14 @@ class SimpleCov::Formatter::Codecov
       params[:branch] = ENV['HEROKU_TEST_RUN_BRANCH']
       params[:build] = ENV['HEROKU_TEST_RUN_ID']
       params[:commit] = ENV['HEROKU_TEST_RUN_COMMIT_VERSION']
+    # GitHub Actions
+    # ---------
+    elsif ENV['GITHUB_WORKFLOW']
+      # FIXME: Change to the corresponding name when GH Actions is supported
+      # params[:service] = 'github_actions_'
+      params[:service] = 'heroku'
+      params[:build] = ENV['_GITHUB_BUILD']
+      params[:commit] = ENV['GITHUB_SHA']
     end
 
     if params[:branch] == nil
